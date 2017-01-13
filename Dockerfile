@@ -1,7 +1,13 @@
-FROM golang
- 
-ADD ./src /go/src/go-hello-web
-RUN go install go-hello-web
-ENTRYPOINT /go/bin/go-hello-web
- 
-EXPOSE 8001
+FROM microsoft/dotnet:latest
+
+COPY . /app
+
+WORKDIR /app
+
+RUN ["dotnet", "restore"]
+
+RUN ["dotnet", "build"]
+
+EXPOSE 8001/tcp
+
+CMD ["dotnet", "run", "--server.urls", "http://*:8001”]
