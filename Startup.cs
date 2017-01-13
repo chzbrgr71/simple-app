@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +30,7 @@ namespace WebApp
             app.Run(async (context) =>
             {
                 // Gather values for frontend service 
-                string appVersion = "1.1.0";
+                //string appVersion = "1.1.0";
                 string frontendName = Environment.MachineName;
                 var ips = Dns.GetHostAddressesAsync(frontendName).Result;
                 var addresses = "";
@@ -45,21 +44,14 @@ namespace WebApp
                 }
                 string frontendIP = addresses.Remove(0,3);
                 
-                // Call backend API container to gather values
-                string backend_svc_ip = Environment.GetEnvironmentVariable("BACKEND_IP");
-                string backend_svc_port = Environment.GetEnvironmentVariable("BACKEND_PORT");
-                
-                var client = new HttpClient();
-                client.BaseAddress = new Uri("http://" + backend_svc_ip + ":" + backend_svc_port);
-                string backendIP = await client.GetStringAsync("/config/getip");
-                string backendName = await client.GetStringAsync("/config/getname");
+                // gather values
+                string svc_ip = frontendIP;
+                string svc_machine_name = frontendName;
 
-                await context.Response.WriteAsync("<h1>Simple Web App (DC/OS)</h1>");
-                await context.Response.WriteAsync("<p>App version: " + appVersion);
+                await context.Response.WriteAsync("<h1>Simple Web App</h1>");
+                await context.Response.WriteAsync("<p>IP Address " + svc_ip);
                 await context.Response.WriteAsync("<br>");
-                await context.Response.WriteAsync("<p>Frontend: " + frontendName + " / " + frontendIP);
-                await context.Response.WriteAsync("<br>");
-                await context.Response.WriteAsync("<p>Backend: " + backendName + " / " + backendIP);
+                await context.Response.WriteAsync("<p>Machine name " + svc_machine_name);
 
             });
         }
